@@ -91,6 +91,7 @@ def generate_images():
                 x,
                 y,
                 textConfig,
+                GENERATED_IMAGE_FOLDER,
                 outname,
             )
 

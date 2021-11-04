@@ -2,14 +2,17 @@
 
 ### TODO
 
-7. Supplement multiple demo images
-8. Make the landing page image an info graphic of the service
-9. Make it return a zip file once generated Limit images to 50
-10. Test how server responds if some fields don't exist or has invalid data
-11. Add CSV file upload for data list
-12. (Optional) Implement a registration and credit system
-13. (Optional) Custom fonts
-14. (Optional) Add emailing images feature
+1. Add height, width
+2. Add loaders and progress bars
+3. Test it with slow internet
+4. Add CSV file upload for data list
+5. Make it return a zip file once generated Limit images to 50
+6. Test how server responds if some fields don't exist or has invalid data
+7. (Optional) Supplement multiple demo images
+8. (Optional) Make the landing page image an info graphic of the service
+9. (Optional) Implement a registration and credit system
+10. (Optional) Custom fonts
+11. (Optional) Add emailing images feature
 
 ### Done
 

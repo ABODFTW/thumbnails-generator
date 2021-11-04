@@ -10,7 +10,7 @@ def generateThumbnail(folder, filename, text, x, y, textConfig, outdirectory, ou
         draw = ImageDraw.Draw(base)
 
         font = ImageFont.truetype(
-            "fonts/Cairo-Regular.ttf", textConfig.get("textSize", 72)
+            "fonts/Cairo-Regular.ttf", int(textConfig.get("textSize", "72"))
         )
 
         draw.text(

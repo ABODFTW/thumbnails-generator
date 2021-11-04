@@ -57,33 +57,23 @@ def generate_images():
 
         if file.filename != "":
             uploaded_filename = file.filename
+            uploaded_filename = secure_filename(uploaded_filename)
+            uploaded_filename = str(uuid.uuid4()) + uploaded_filename
+            # Save uploaded image
+            file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
         else:
             uploaded_filename = "image.jpg"
 
         if allowed_file(uploaded_filename, ALLOWED_EXTENSIONS):
-            print("HEY2")
-            uploaded_filename = secure_filename(uploaded_filename)
-            uploaded_filename = str(uuid.uuid4()) + uploaded_filename
+
             text_cords = request.form.get("textCords", "")
             text = request.form.get("text", "")
             x = json.loads(text_cords).get("x")
             y = json.loads(text_cords).get("y")
-            try:
-                textConfig = json.loads(request.form.get("textConfig"))
-            except:
-                textConfig = {
-                    "textSize": 72,
-                    "textAlign": "left",
-                    "textDir": "ltr",
-                    "textColor": "#000",
-                }
-
-            # Save uploaded image
-            uploaded_filename = text.replace(" ", "_") + "_" + uploaded_filename
-            file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
+            textConfig = json.loads(request.form.get("textConfig"))
 
             # Generate image with text
-            outname = str(uuid.uuid4())
+            outname = text.replace(" ", "_") + "_" + uploaded_filename
             generateThumbnail(
                 UPLOAD_FOLDER,
                 uploaded_filename,

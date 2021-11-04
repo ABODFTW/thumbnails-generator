@@ -1,5 +1,6 @@
 import sys
 import os
+from pathlib import Path
 import uuid
 import json
 
@@ -67,23 +68,34 @@ def generate_images():
         if allowed_file(uploaded_filename, ALLOWED_EXTENSIONS):
 
             text_cords = request.form.get("textCords", "")
-            text = request.form.get("text", "")
+            texts = json.loads(request.form.get("text", "")).get("sentences")
             x = json.loads(text_cords).get("x")
             y = json.loads(text_cords).get("y")
+            width = json.loads(text_cords).get("w")
             textConfig = json.loads(request.form.get("textConfig"))
 
-            # Generate image with text
-            outname = text.replace(" ", "_") + "_" + uploaded_filename
-            generateThumbnail(
-                UPLOAD_FOLDER,
-                uploaded_filename,
-                text,
-                x,
-                y,
-                textConfig,
-                GENERATED_IMAGE_FOLDER,
-                outname,
-            )
+            generated_images = []
+
+            for text in texts:
+
+                # Generate image with text
+                outname = text.split()[0].replace(" ", "_") + "_" + uploaded_filename
+                directory = os.path.join(str(uuid.uuid4()), GENERATED_IMAGE_FOLDER)
+
+                Path(directory).mkdir(parents=True, exist_ok=True)
+
+                generateThumbnail(
+                    UPLOAD_FOLDER,
+                    uploaded_filename,
+                    text,
+                    x,
+                    y,
+                    width,
+                    textConfig,
+                    directory,
+                    outname,
+                )
+                generated_images.append(outname)
 
             # Return url to the image with text
             return url_for("download_image", name=outname)

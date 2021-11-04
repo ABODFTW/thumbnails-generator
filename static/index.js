@@ -43,7 +43,9 @@ window.addEventListener('DOMContentLoaded', function () {
             console.log(content)
             content = JSON.stringify({
                 "x": content.x,
-                "y": content.y
+                "y": content.y,
+                "w": content.width,
+                "h": content.height
             })
             textCords.textContent = content
 

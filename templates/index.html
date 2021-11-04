@@ -122,13 +122,20 @@
                                 <div class="mb-3">
                                     <textarea class="form-control d-none" name="textConfig" id="textConfig"></textarea>
                                 </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control d-none" name="text" id="text"></textarea>
+                                </div>
                                 <label for="dataList" class="form-label">Data list</label>
                                 <div class="input-group mb-3">
-                                    <input autocomplete="off" autofocus class="form-control" type="text" id="dataList"
-                                           name="text">
-                                    <button class="btn btn-outline-success d-block" data-bs-toggle="modal"
+                                    <input autocomplete="off" autofocus class="form-control" type="text"
+                                           id="sentenceInput">
+                                    <button class="btn btn-outline-success d-block" type="button" id="addSentence"><i
+                                           class="gg-math-plus"></i></button>
+                                    <button class="btn btn-success d-block" data-bs-toggle="modal"
                                             data-bs-target="#staticBackdrop" type="button"><i
-                                           class="gg-arrows-expand-left"></i></button>
+                                           class="gg-pen"></i></button>
+                                </div>
+                                <div id="sentencesList">
                                 </div>
                                 <div class="form-group mb-3">
                                     <a class="btn btn-warning block" href="#" data-bs-toggle="modal"
@@ -159,6 +166,7 @@
         <script src="/static/index.js"></script>
         <script src="/static/textConfig.js"></script>
         <script src="/static/previewDesign.js"></script>
+        <script src="/static/addSentence.js"></script>
     </body>
 
 </html>

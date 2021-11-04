@@ -41,3 +41,11 @@ img {
   cursor: pointer;
   box-shadow: 8px 8px 8px gray;
 }
+
+#sentencesList {
+  margin: 1em;
+  margin-bottom: 2em;
+}
+
+.item {
+}

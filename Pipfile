@@ -9,6 +9,7 @@ pillow = "*"
 flask-socketio = "*"
 flask-wtf = "*"
 pycld3 = "*"
+jupyterlab = "*"
 
 [dev-packages]
 

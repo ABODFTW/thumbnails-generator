@@ -1,8 +1,6 @@
 img = document.getElementById("design")
 imgInput = document.getElementById("imageInput")
 
-// image
-
 
 // Setting up selecting on image
 window.addEventListener('DOMContentLoaded', function () {

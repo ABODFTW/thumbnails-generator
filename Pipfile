@@ -10,6 +10,7 @@ flask-socketio = "*"
 flask-wtf = "*"
 pycld3 = "*"
 jupyterlab = "*"
+schema = "*"
 
 [dev-packages]
 

@@ -4,9 +4,10 @@ form = document.getElementById("generateDesignForm")
 
 window.addEventListener('DOMContentLoaded', function () {
     previewDesignBtn.addEventListener("click", () => {
-        data = new FormData(form)
 
-        fetch("/generate",
+        designPreview.src = "";
+        data = new FormData(form)
+        fetch("/preview",
             {
                 body: data,
                 method: "post"

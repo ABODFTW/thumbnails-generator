@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 import uuid
 import json
+import zipfile
+from io import BytesIO
 
 from flask import (
     Flask,
@@ -17,7 +19,8 @@ from flask import (
 from werkzeug.utils import secure_filename
 
 from imageGenerator import generateThumbnail
-from helpers import allowed_file
+
+from forms import ThumbnailDesignForm
 
 # Config
 app = Flask(__name__)
@@ -40,51 +43,54 @@ def after_request(response):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    form = ThumbnailDesignForm()
+    return render_template("index.html", form=form)
 
 
-@app.route("/generated/<name>")
-def download_image(name):
-    return send_from_directory(GENERATED_IMAGE_FOLDER, name)
+@app.route("/generated/<subdirectory>/<name>")
+def get_preview(subdirectory, name):
+    filename = os.path.join(subdirectory, name)
+    return send_from_directory(GENERATED_IMAGE_FOLDER, filename)
 
 
 @app.route("/generate", methods=["POST"])
-def generate_images():
+def generate_images_zip():
     if request.method == "POST":
-        file = request.files["image"]
+        form = ThumbnailDesignForm()
 
-        if "image" not in request.files:
-            uploaded_filename = "image.jpg"
+        if form.validate_on_submit():
+            try:
+                file = form.imageInput.data
+                uploaded_filename = form.imageInput.data.filename
+                uploaded_filename = secure_filename(uploaded_filename)
+                uploaded_filename = str(uuid.uuid4()) + uploaded_filename
+                # Save uploaded image
+                file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
+            except AttributeError:
+                uploaded_filename = "image.jpg"
 
-        if file.filename != "":
-            uploaded_filename = file.filename
-            uploaded_filename = secure_filename(uploaded_filename)
-            uploaded_filename = str(uuid.uuid4()) + uploaded_filename
-            # Save uploaded image
-            file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
-        else:
-            uploaded_filename = "image.jpg"
+            texts = json.loads(form.text.data).get("sentences")
 
-        if allowed_file(uploaded_filename, ALLOWED_EXTENSIONS):
+            text_cords = json.loads(form.textCords.data)
+            x = (text_cords.get("w") / 2) + text_cords.get("x")
+            y = (text_cords.get("h") / 2) + text_cords.get("y")
+            width = text_cords.get("w")
 
-            text_cords = request.form.get("textCords", "")
-            texts = json.loads(request.form.get("text", "")).get("sentences")
-            x = json.loads(text_cords).get("x")
-            y = json.loads(text_cords).get("y")
-            width = json.loads(text_cords).get("w")
-            textConfig = json.loads(request.form.get("textConfig"))
+            textConfig = json.loads(form.textConfig.data)
+
+            subdirectory = str(uuid.uuid4())
+            directory = os.path.join(GENERATED_IMAGE_FOLDER, subdirectory)
 
             generated_images = []
 
             for text in texts:
 
                 # Generate image with text
-                outname = text.split()[0].replace(" ", "_") + "_" + uploaded_filename
-                directory = os.path.join(str(uuid.uuid4()), GENERATED_IMAGE_FOLDER)
+                outname = text.replace(" ", "_") + "_" + uploaded_filename
 
                 Path(directory).mkdir(parents=True, exist_ok=True)
 
-                generateThumbnail(
+                response = generateThumbnail(
                     UPLOAD_FOLDER,
                     uploaded_filename,
                     text,
@@ -95,10 +101,81 @@ def generate_images():
                     directory,
                     outname,
                 )
-                generated_images.append(outname)
+                if response:
+                    generated_images.append(outname)
+                    # Return url to the generated image
+                    # return url_for("get_preview", subdirectory=subdirectory, name=outname)
+            memory_file = BytesIO()
+            with zipfile.ZipFile(memory_file, "w") as zf:
+                for filename in generated_images:
+                    filepath = os.path.join(directory, filename)
+                    data = zipfile.ZipInfo(filepath)
+                    data.compress_type = zipfile.ZIP_DEFLATED
+                    zf.write(filepath)
+            memory_file.seek(0)
+            return send_file(
+                memory_file,
+                attachment_filename="{}.zip".format(subdirectory),
+                as_attachment=True,
+            )
+        else:
+            for fieldName, errorMessages in form.errors.items():
+                for err in errorMessages:
+                    flash(err, "danger")
+            return redirect("/")
 
-            # Return url to the image with text
-            return url_for("download_image", name=outname)
+
+@app.route("/preview", methods=["POST"])
+def preview_image():
+    if request.method == "POST":
+        form = ThumbnailDesignForm()
+
+        if form.validate_on_submit():
+            try:
+                file = form.imageInput.data
+                uploaded_filename = form.imageInput.data.filename
+                uploaded_filename = secure_filename(uploaded_filename)
+                uploaded_filename = str(uuid.uuid4()) + uploaded_filename
+                # Save uploaded image
+                file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
+            except AttributeError:
+                uploaded_filename = "image.jpg"
+
+            texts = json.loads(form.text.data).get("sentences")
+
+            text_cords = json.loads(form.textCords.data)
+            x = (text_cords.get("w") / 2) + text_cords.get("x")
+            y = (text_cords.get("h") / 2) + text_cords.get("y")
+            width = text_cords.get("w")
+
+            textConfig = json.loads(form.textConfig.data)
+
+            subdirectory = str(uuid.uuid4())
+            directory = os.path.join(GENERATED_IMAGE_FOLDER, subdirectory)
+
+            for text in texts:
+
+                # Generate image with text
+                outname = text.replace(" ", "_") + "_" + uploaded_filename
+
+                Path(directory).mkdir(parents=True, exist_ok=True)
+
+                response = generateThumbnail(
+                    UPLOAD_FOLDER,
+                    uploaded_filename,
+                    text,
+                    x,
+                    y,
+                    width,
+                    textConfig,
+                    directory,
+                    outname,
+                )
+                if response:
+                    # Return url to the generated image
+                    return url_for(
+                        "get_preview", subdirectory=subdirectory, name=outname
+                    )
 
 
 @app.route("/fonts")

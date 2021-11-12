@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 from pathlib import Path
 import uuid
 import json
@@ -65,9 +66,17 @@ def generate_images_zip():
                 uploaded_filename = secure_filename(uploaded_filename)
                 uploaded_filename = str(uuid.uuid4()) + uploaded_filename
                 # Save uploaded image
+                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
                 file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
             except AttributeError:
-                uploaded_filename = "image.jpg"
+                default_image = "image.jpg"
+                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+
+                shutil.copyfile(
+                    f"static/{default_image}",
+                    os.path.join(UPLOAD_FOLDER, default_image),
+                )
+                uploaded_filename = default_image
 
             texts = json.loads(form.text.data).get("sentences")
 
@@ -137,9 +146,17 @@ def preview_image():
                 uploaded_filename = secure_filename(uploaded_filename)
                 uploaded_filename = str(uuid.uuid4()) + uploaded_filename
                 # Save uploaded image
+                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
                 file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
             except AttributeError:
-                uploaded_filename = "image.jpg"
+                default_image = "image.jpg"
+                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+
+                shutil.copyfile(
+                    f"static/{default_image}",
+                    os.path.join(UPLOAD_FOLDER, default_image),
+                )
+                uploaded_filename = default_image
 
             texts = json.loads(form.text.data).get("sentences")
 

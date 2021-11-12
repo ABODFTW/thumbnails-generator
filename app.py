@@ -60,17 +60,16 @@ def generate_images_zip():
         form = ThumbnailDesignForm()
 
         if form.validate_on_submit():
+            Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
             try:
                 file = form.imageInput.data
                 uploaded_filename = form.imageInput.data.filename
                 uploaded_filename = secure_filename(uploaded_filename)
                 uploaded_filename = str(uuid.uuid4()) + uploaded_filename
                 # Save uploaded image
-                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
                 file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
             except AttributeError:
                 default_image = "image.jpg"
-                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 
                 shutil.copyfile(
                     f"static/{default_image}",
@@ -140,18 +139,20 @@ def preview_image():
         form = ThumbnailDesignForm()
 
         if form.validate_on_submit():
+
+            # Create UPLOAD folder if doesn't exist
+            Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+
             try:
                 file = form.imageInput.data
                 uploaded_filename = form.imageInput.data.filename
                 uploaded_filename = secure_filename(uploaded_filename)
                 uploaded_filename = str(uuid.uuid4()) + uploaded_filename
                 # Save uploaded image
-                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
                 file.save(os.path.join(UPLOAD_FOLDER, uploaded_filename))
             except AttributeError:
                 default_image = "image.jpg"
-                Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
-
+                # To be able to access the fallback image as if it was uploaded by user
                 shutil.copyfile(
                     f"static/{default_image}",
                     os.path.join(UPLOAD_FOLDER, default_image),
@@ -169,30 +170,27 @@ def preview_image():
 
             subdirectory = str(uuid.uuid4())
             directory = os.path.join(GENERATED_IMAGE_FOLDER, subdirectory)
+            outname = texts[0].replace(" ", "_") + "_" + uploaded_filename
 
-            for text in texts:
+            Path(directory).mkdir(parents=True, exist_ok=True)
 
-                # Generate image with text
-                outname = text.replace(" ", "_") + "_" + uploaded_filename
-
-                Path(directory).mkdir(parents=True, exist_ok=True)
-
-                response = generateThumbnail(
-                    UPLOAD_FOLDER,
-                    uploaded_filename,
-                    text,
-                    x,
-                    y,
-                    width,
-                    textConfig,
-                    directory,
-                    outname,
-                )
-                if response:
-                    # Return url to the generated image
-                    return url_for(
-                        "get_preview", subdirectory=subdirectory, name=outname
-                    )
+            response = generateThumbnail(
+                UPLOAD_FOLDER,
+                uploaded_filename,
+                texts[0],
+                x,
+                y,
+                width,
+                textConfig,
+                directory,
+                outname,
+            )
+            if response:
+                # Return url to the generated image
+                return url_for("get_preview", subdirectory=subdirectory, name=outname)
+        else:
+            flash("Invalid form")
+            return redirect("/")
 
 
 @app.route("/fonts")

@@ -11,6 +11,7 @@ flask-wtf = "*"
 pycld3 = "*"
 jupyterlab = "*"
 schema = "*"
+gunicorn = "*"
 
 [dev-packages]
 

@@ -139,3 +139,4 @@ cython_debug/
 
 generated/
 uploads/
+tmp_fonts/

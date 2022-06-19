@@ -14,6 +14,11 @@ window.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    document.querySelector('#deleteAll').addEventListener('click', function (e) {
+        dataList.textContent = JSON.stringify({ "sentences": [] })
+        sentencesList.innerHTML = ""
+    });
+
 
     addSentence.addEventListener("click", (e) => {
         addItem()

@@ -16,6 +16,7 @@
     <!-- Icons -->
     <link href='https://css.gg/math-plus.css' rel='stylesheet'>
     <link href='https://css.gg/pen.css' rel='stylesheet'>
+    <link href='https://css.gg/remove.css' rel='stylesheet'>
   </head>
 
   <body>
@@ -122,6 +123,10 @@
                 {{ form.textCords(class_="d-none") }}
                 {{ form.textConfig(class_="d-none") }}
                 {{ form.text(class_="d-none") }}
+                <div class="mb-3">
+                  <label for="imageInput" class="form-label">{{form.fontFile.label}}</label>
+                  {{ form.fontFile(class_="form-control") }}
+                </div>
                 <div class="form-group mb-3">
                   <a class="btn btn-primary block fw-bold" href="#" data-bs-toggle="modal"
                      data-bs-target="#previewBackdrop" id="previewDesign">
@@ -134,6 +139,8 @@
                 <label for="dataList" class="form-label">Data list</label>
                 <div class="input-group mb-3">
                   <input autocomplete="off" autofocus class="form-control" type="text" id="sentenceInput">
+                  <button class="btn btn-outline-danger d-block" type="button" id="deleteAll"><i
+                       class="gg-remove"></i></button>
                   <button class="btn btn-outline-success d-block" type="button" id="addSentence"><i
                        class="gg-math-plus"></i></button>
                   <button class="btn btn-success d-block" data-bs-toggle="modal" data-bs-target="#staticBackdrop"

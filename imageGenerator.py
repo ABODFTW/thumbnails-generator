@@ -28,14 +28,14 @@ def split_text_to_match_boxsize(draw, text, width, font):
 
 
 def generateThumbnail(
-    folder, filename, text, x, y, width, textConfig, outdirectory, outname
+    folder, filename, text, x, y, width, textConfig, outdirectory, outname, font_path
 ):
     # get an image
     with Image.open(os.path.join(folder, filename)).convert("RGB") as base:
         draw = ImageDraw.Draw(base)
 
         font = ImageFont.truetype(
-            "fonts/Cairo-Regular.ttf", int(textConfig.get("textSize", "72"))
+            font_path, int(textConfig.get("textSize", "72"))
         )
         text = split_text_to_match_boxsize(draw, text, width, font)
         draw.text(

@@ -1,12 +1,12 @@
 import json
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField
-from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms.validators import DataRequired, ValidationError
+from flask_wtf.file import FileAllowed, FileField, FileRequired
 
 # Schema
-from schema import Schema, And
+from schema import And, Schema
+from wtforms import StringField, TextAreaField
+from wtforms.validators import DataRequired, ValidationError
 
 textCords_Schema = Schema({"x": int, "y": int, "w": int, "h": int})
 textConfig_Schema = Schema(
@@ -26,6 +26,12 @@ class ThumbnailDesignForm(FlaskForm):
         "Design Template",
         validators=[
             FileAllowed(["png", "jpg", "jpeg"], "Images only!"),
+        ],
+    )
+    fontFile = FileField(
+        "Font file (Optional)",
+        validators=[
+            FileAllowed(["ttf"], "TTF fonts only!"),
         ],
     )
     # Json object with x,y and w

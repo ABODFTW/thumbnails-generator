@@ -1,27 +1,18 @@
-import sys
+import json
 import os
 import shutil
-from pathlib import Path
+import sys
 import uuid
-import json
 import zipfile
 from io import BytesIO
+from pathlib import Path
 
-from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    flash,
-    send_from_directory,
-    send_file,
-)
+from flask import (Flask, flash, redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from werkzeug.utils import secure_filename
 
-from imageGenerator import generateThumbnail
-
 from forms import ThumbnailDesignForm
+from imageGenerator import generateThumbnail
 
 # Config
 app = Flask(__name__)
@@ -31,6 +22,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 UPLOAD_FOLDER = "uploads"
+TMP_FONTS_FOLDER = "tmp_fonts"
 GENERATED_IMAGE_FOLDER = "generated"
 
 # Ensure responses aren't cached
@@ -61,6 +53,25 @@ def generate_images_zip():
 
         if form.validate_on_submit():
             Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+            Path(TMP_FONTS_FOLDER).mkdir(parents=True, exist_ok=True)
+
+
+            try:
+                print("Uploaded font filename: ")
+                print(form.fontFile.data.filename)
+
+                # Save uploaded font file
+                font_file = form.fontFile.data
+                uploaded_font_filename = form.fontFile.data.filename
+                uploaded_font_filename = secure_filename(uploaded_font_filename)
+                uploaded_font_filename = str(uuid.uuid4()) + uploaded_font_filename
+
+                uploaded_font_path = os.path.join(TMP_FONTS_FOLDER, uploaded_font_filename)
+                # Save uploaded image
+                font_file.save(uploaded_font_path)
+            except AttributeError:
+                uploaded_font_path = "fonts/Cairo-Regular.ttf"
+
             try:
                 file = form.imageInput.data
                 uploaded_filename = form.imageInput.data.filename
@@ -108,6 +119,7 @@ def generate_images_zip():
                     textConfig,
                     directory,
                     outname,
+                    uploaded_font_path
                 )
                 if response:
                     generated_images.append(outname)
@@ -142,6 +154,23 @@ def preview_image():
 
             # Create UPLOAD folder if doesn't exist
             Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+            Path(TMP_FONTS_FOLDER).mkdir(parents=True, exist_ok=True)
+
+            try:
+                print("Uploaded font filename: ")
+                print(form.fontFile.data.filename)
+
+                # Save uploaded font file
+                font_file = form.fontFile.data
+                uploaded_font_filename = form.fontFile.data.filename
+                uploaded_font_filename = secure_filename(uploaded_font_filename)
+                uploaded_font_filename = str(uuid.uuid4()) + uploaded_font_filename
+
+                uploaded_font_path = os.path.join(TMP_FONTS_FOLDER, uploaded_font_filename)
+                # Save uploaded image
+                font_file.save(uploaded_font_path)
+            except AttributeError:
+                uploaded_font_path = "fonts/Cairo-Regular.ttf"
 
             try:
                 file = form.imageInput.data
@@ -184,6 +213,7 @@ def preview_image():
                 textConfig,
                 directory,
                 outname,
+                uploaded_font_path
             )
             if response:
                 # Return url to the generated image

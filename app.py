@@ -1,5 +1,6 @@
 import json
 import os
+import pathlib
 import shutil
 import sys
 import uuid
@@ -88,7 +89,9 @@ def generate_images_zip():
                 )
                 uploaded_filename = default_image
 
-            texts = json.loads(form.text.data).get("sentences")
+            texts = form.text.data.split("\n")
+
+            texts = [sentence.strip() for sentence in texts]
 
             text_cords = json.loads(form.textCords.data)
             x = (text_cords.get("w") / 2) + text_cords.get("x")
@@ -127,11 +130,14 @@ def generate_images_zip():
                     # return url_for("get_preview", subdirectory=subdirectory, name=outname)
             memory_file = BytesIO()
             with zipfile.ZipFile(memory_file, "w") as zf:
-                for filename in generated_images:
-                    filepath = os.path.join(directory, filename)
-                    data = zipfile.ZipInfo(filepath)
-                    data.compress_type = zipfile.ZIP_DEFLATED
-                    zf.write(filepath)
+                generated_images_folder = pathlib.Path(directory)
+                for file_path in generated_images_folder.iterdir():
+                    zf.write(file_path, file_path.relative_to(directory))
+                # for filename in generated_images:
+                #     filepath = os.path.join(directory, filename)
+                #     data = zipfile.ZipInfo(filepath)
+                #     data.compress_type = zipfile.ZIP_DEFLATED
+                #     zf.write(filepath)
             memory_file.seek(0)
             return send_file(
                 memory_file,
@@ -188,7 +194,9 @@ def preview_image():
                 )
                 uploaded_filename = default_image
 
-            texts = json.loads(form.text.data).get("sentences")
+            texts = form.text.data.split("\n")
+
+            texts = [sentence.strip() for sentence in texts]
 
             text_cords = json.loads(form.textCords.data)
             x = (text_cords.get("w") / 2) + text_cords.get("x")

@@ -122,7 +122,6 @@
                 </div>
                 {{ form.textCords(class_="d-none") }}
                 {{ form.textConfig(class_="d-none") }}
-                {{ form.text(class_="d-none") }}
                 <div class="mb-3">
                   <label for="imageInput" class="form-label">{{form.fontFile.label}}</label>
                   {{ form.fontFile(class_="form-control") }}
@@ -136,16 +135,19 @@
                 <div class="form-group mb-3">
                   <button type="submit" class="btn btn-success block fw-bold">Generate</button>
                 </div>
+                <div class="form-group mb-3">
+                  <button class="btn btn-outline-warning block fw-bold" data-bs-toggle="modal"
+                          data-bs-target="#staticBackdrop" type="button">Config</button>
+                </div>
                 <label for="dataList" class="form-label">Data list</label>
-                <div class="input-group mb-3">
+                {{ form.text(class_="form-control") }}
+                <!-- <div class="input-group mb-3">
                   <input autocomplete="off" autofocus class="form-control" type="text" id="sentenceInput">
                   <button class="btn btn-outline-danger d-block" type="button" id="deleteAll"><i
                        class="gg-remove"></i></button>
                   <button class="btn btn-outline-success d-block" type="button" id="addSentence"><i
                        class="gg-math-plus"></i></button>
-                  <button class="btn btn-success d-block" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                          type="button"><i class="gg-pen"></i></button>
-                </div>
+                </div> -->
                 <div id="sentencesList">
                 </div>
               </div>

@@ -58,10 +58,10 @@ class ThumbnailDesignForm(FlaskForm):
         else:
             raise ValidationError("Text Config field has invalid data.")
 
-    def validate_text(form, field):
-        text = json.loads(field.data)
+    # def validate_text(form, field):
+    #     text = json.loads(field.data)
 
-        if text_Schema.is_valid(text):
-            text_Schema.validate(text)
-        else:
-            raise ValidationError("Text field has invalid data.")
+    #     if text_Schema.is_valid(text):
+    #         text_Schema.validate(text)
+    #     else:
+    #         raise ValidationError("Text field has invalid data.")
